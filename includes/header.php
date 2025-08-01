@@ -78,7 +78,27 @@
                         <a class="nav-link" href="sell.php">Sell Item</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="chat.php">Chat</a>
+                        <a class="nav-link" href="chat.php">
+                            Messages
+                            <?php 
+                            // Get unread message count
+                            if (isset($_SESSION['user_id'])) {
+                                require_once 'config/database.php';
+                                $database = new Database();
+                                $db = $database->getConnection();
+                                $unread_query = "SELECT COUNT(*) as unread_count FROM messages WHERE receiver_id = ? AND is_read = FALSE";
+                                $unread_stmt = $db->prepare($unread_query);
+                                $unread_stmt->execute([$_SESSION['user_id']]);
+                                $unread_result = $unread_stmt->fetch(PDO::FETCH_ASSOC);
+                                $unread_count = $unread_result['unread_count'];
+                                if ($unread_count > 0): 
+                            ?>
+                            <span class="badge bg-danger"><?= $unread_count ?></span>
+                            <?php 
+                                endif;
+                            }
+                            ?>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="cart.php">
