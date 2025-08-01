@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
@@ -5,39 +6,52 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+require_once 'config/database.php';
+
+$database = new Database();
+$db = $database->getConnection();
+
 // Handle remove from cart
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['remove_item'])) {
-    $remove_id = $_POST['item_id'];
-    if (isset($_SESSION['cart'])) {
-        $_SESSION['cart'] = array_filter($_SESSION['cart'], function($item) use ($remove_id) {
-            return $item['id'] != $remove_id;
-        });
-        $_SESSION['cart'] = array_values($_SESSION['cart']); // Re-index array
+    $cart_id = $_POST['cart_id'];
+    $delete_query = "DELETE FROM cart WHERE id = ? AND user_id = ?";
+    $delete_stmt = $db->prepare($delete_query);
+    if ($delete_stmt->execute([$cart_id, $_SESSION['user_id']])) {
         $_SESSION['success'] = "Item removed from cart!";
     }
 }
 
 // Handle clear cart
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['clear_cart'])) {
-    $_SESSION['cart'] = [];
-    $_SESSION['success'] = "Cart cleared!";
+    $clear_query = "DELETE FROM cart WHERE user_id = ?";
+    $clear_stmt = $db->prepare($clear_query);
+    if ($clear_stmt->execute([$_SESSION['user_id']])) {
+        $_SESSION['success'] = "Cart cleared!";
+    }
 }
 
 // Handle note update
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_note'])) {
-    $item_id = $_POST['item_id'];
+    $cart_id = $_POST['cart_id'];
     $note = $_POST['note'];
-    foreach ($_SESSION['cart'] as $key => $item) {
-        if ($item['id'] == $item_id) {
-            $_SESSION['cart'][$key]['note'] = $note;
-            $_SESSION['success'] = "Note updated!";
-            break;
-        }
+    $update_query = "UPDATE cart SET note = ? WHERE id = ? AND user_id = ?";
+    $update_stmt = $db->prepare($update_query);
+    if ($update_stmt->execute([$note, $cart_id, $_SESSION['user_id']])) {
+        $_SESSION['success'] = "Note updated!";
     }
 }
 
+// Get cart items from database
+$cart_query = "SELECT c.id as cart_id, c.note, p.*, u.username as seller_name 
+               FROM cart c 
+               JOIN products p ON c.product_id = p.id 
+               JOIN users u ON p.seller_id = u.id 
+               WHERE c.user_id = ? 
+               ORDER BY c.added_at DESC";
+$cart_stmt = $db->prepare($cart_query);
+$cart_stmt->execute([$_SESSION['user_id']]);
+$cart_items = $cart_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$cart_items = $_SESSION['cart'] ?? [];
 $total_price = 0;
 foreach ($cart_items as $item) {
     $total_price += $item['price'];
@@ -86,13 +100,13 @@ include 'includes/header.php';
                                                 <div class="col-md-8">
                                                     <h6 class="card-title" style="font-size: 0.8rem;"><?= htmlspecialchars($item['title']) ?></h6>
                                                     <p class="card-text" style="font-size: 0.8rem;">
-                                                        <small class="text-muted">Sold by <?= htmlspecialchars($item['seller']) ?></small>
+                                                        <small class="text-muted">Sold by <?= htmlspecialchars($item['seller_name']) ?></small>
                                                     </p>
                                                     <p class="card-text" style="font-size: 0.8rem;">
                                                         <strong class="text-primary">Rp <?= number_format($item['price'], 0) ?></strong>
                                                     </p>
                                                     <form method="POST">
-                                                        <input type="hidden" name="item_id" value="<?= $item['id'] ?>">
+                                                        <input type="hidden" name="cart_id" value="<?= $item['cart_id'] ?>">
                                                         <div class="mb-3">
                                                             <label for="note" class="form-label" style="font-size: 0.8rem;">Note:</label>
                                                             <textarea class="form-control" id="note" name="note" rows="1" style="font-size: 0.8rem;"><?= htmlspecialchars($item['note'] ?? '') ?></textarea>
@@ -102,7 +116,7 @@ include 'includes/header.php';
                                                 </div>
                                                 <div class="col-md-4 text-end">
                                                     <form method="POST" class="d-inline">
-                                                        <input type="hidden" name="item_id" value="<?= $item['id'] ?>">
+                                                        <input type="hidden" name="cart_id" value="<?= $item['cart_id'] ?>">
                                                         <button type="submit" name="remove_item" class="btn btn-outline-danger btn-sm">
                                                             <i class="fas fa-trash"></i> Remove
                                                         </button>

@@ -36,31 +36,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_to_cart'])) {
     if ($_SESSION['user_id'] == $product['seller_id']) {
         $_SESSION['error'] = "You cannot buy your own item!";
     } else {
-        // Initialize cart if not exists
-        if (!isset($_SESSION['cart'])) {
-            $_SESSION['cart'] = [];
-        }
-        
         // Check if item already in cart
-        $item_exists = false;
-        foreach ($_SESSION['cart'] as $item) {
-            if ($item['id'] == $product_id) {
-                $item_exists = true;
-                break;
-            }
-        }
+        $check_query = "SELECT id FROM cart WHERE user_id = ? AND product_id = ?";
+        $check_stmt = $db->prepare($check_query);
+        $check_stmt->execute([$_SESSION['user_id'], $product_id]);
         
-        if ($item_exists) {
+        if ($check_stmt->fetch()) {
             $_SESSION['error'] = "Item is already in your cart!";
         } else {
-            $_SESSION['cart'][] = [
-                'id' => $product['id'],
-                'title' => $product['title'],
-                'price' => $product['price'],
-                'image' => $product['image'],
-                'seller' => $product['username']
-            ];
-            $_SESSION['success'] = "Item added to cart successfully!";
+            // Insert into cart table
+            $insert_query = "INSERT INTO cart (user_id, product_id) VALUES (?, ?)";
+            $insert_stmt = $db->prepare($insert_query);
+            
+            if ($insert_stmt->execute([$_SESSION['user_id'], $product_id])) {
+                $_SESSION['success'] = "Item added to cart successfully!";
+            } else {
+                $_SESSION['error'] = "Failed to add item to cart!";
+            }
         }
     }
 }
@@ -117,7 +109,7 @@ include 'includes/header.php';
                                             <i class="fas fa-shopping-cart"></i> Add to Cart
                                         </button>
                                     </form>
-                                    <a href="chat.php?user=<?= $product['seller_id'] ?>" class="btn btn-outline-primary">
+                                    <a href="chat.php?seller=<?= $product['seller_id'] ?>" class="btn btn-outline-primary">
                                         <i class="fas fa-comment"></i> Message Seller
                                     </a>
                                     <?php else: ?>

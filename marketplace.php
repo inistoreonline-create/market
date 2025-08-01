@@ -102,7 +102,7 @@ include 'includes/header.php';
                 <div class="card-footer">
                     <a href="product.php?id=<?= $product['id'] ?>" class="btn btn-primary">View Details</a>
                     <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != $product['seller_id']): ?>
-                    <a href="chat.php?user=<?= $product['seller_id'] ?>" class="btn btn-outline-primary">Message Seller</a>
+                    <a href="chat.php?seller=<?= $product['seller_id'] ?>" class="btn btn-outline-primary">Message Seller</a>
                     <?php endif; ?>
                 </div>
             </div>
