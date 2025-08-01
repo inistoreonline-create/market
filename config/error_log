@@ -1,0 +1,8 @@
+[30-Jul-2025 14:55:03 UTC] PHP Fatal error:  Uncaught Error: Call to a member function exec() on null in /home/hiajacom/api/config/init_db.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/hiajacom/api/config/init_db.php on line 20
+[30-Jul-2025 15:02:43 UTC] PHP Fatal error:  Uncaught Error: Call to a member function exec() on null in /home/hiajacom/api/config/init_db.php:20
+Stack trace:
+#0 {main}
+  thrown in /home/hiajacom/api/config/init_db.php on line 20
