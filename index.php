@@ -125,7 +125,7 @@ include 'includes/header.php';
                  <div class="card-body">
                     <p class="card-title mb-1" style="font-size: 0.75rem; font-weight: bold;"><?= htmlspecialchars($product['title']) ?></p>
                     <p class="card-text" style="font-size: 0.7rem;"><?= htmlspecialchars(substr($product['description'], 0, 100)) ?>...</p>
-                    <p class="card-text" style="font-size: 0.7rem;"><strong>$<?= number_format($product['price'], 2) ?></strong></p>
+                    <p class="card-text" style="font-size: 0.7rem;"><strong>Rp <?= number_format($product['price'], 0) ?></strong></p>
                     <p class="card-text" style="font-size: 0.65rem;"><small class="text-muted">by <?= htmlspecialchars($product['username']) ?></small></p>
                 </div>
                 </a>

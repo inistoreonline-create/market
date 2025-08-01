@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
@@ -24,6 +23,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['clear_cart'])) {
     $_SESSION['success'] = "Cart cleared!";
 }
 
+// Handle note update
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_note'])) {
+    $item_id = $_POST['item_id'];
+    $note = $_POST['note'];
+    foreach ($_SESSION['cart'] as $key => $item) {
+        if ($item['id'] == $item_id) {
+            $_SESSION['cart'][$key]['note'] = $note;
+            $_SESSION['success'] = "Note updated!";
+            break;
+        }
+    }
+}
+
+
 $cart_items = $_SESSION['cart'] ?? [];
 $total_price = 0;
 foreach ($cart_items as $item) {
@@ -47,7 +60,7 @@ include 'includes/header.php';
                         <?php unset($_SESSION['success']); ?>
                     </div>
                     <?php endif; ?>
-                    
+
                     <?php if (empty($cart_items)): ?>
                     <div class="text-center">
                         <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
@@ -63,21 +76,29 @@ include 'includes/header.php';
                                 <div class="row g-0">
                                     <div class="col-md-3">
                                         <img src="uploads/<?= $item['image'] ?? 'placeholder.jpg' ?>" 
-                                             class="img-fluid rounded-start h-100" 
+                                             class="img-fluid rounded-start" 
                                              alt="<?= htmlspecialchars($item['title']) ?>"
-                                             style="object-fit: cover; min-height: 120px;">
+                                             style="object-fit: cover; width: 220px; height: 230px;">
                                     </div>
                                     <div class="col-md-9">
                                         <div class="card-body">
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <h6 class="card-title"><?= htmlspecialchars($item['title']) ?></h6>
-                                                    <p class="card-text">
+                                                    <h6 class="card-title" style="font-size: 0.8rem;"><?= htmlspecialchars($item['title']) ?></h6>
+                                                    <p class="card-text" style="font-size: 0.8rem;">
                                                         <small class="text-muted">Sold by <?= htmlspecialchars($item['seller']) ?></small>
                                                     </p>
-                                                    <p class="card-text">
-                                                        <strong class="text-primary">$<?= number_format($item['price'], 2) ?></strong>
+                                                    <p class="card-text" style="font-size: 0.8rem;">
+                                                        <strong class="text-primary">Rp <?= number_format($item['price'], 0) ?></strong>
                                                     </p>
+                                                    <form method="POST">
+                                                        <input type="hidden" name="item_id" value="<?= $item['id'] ?>">
+                                                        <div class="mb-3">
+                                                            <label for="note" class="form-label" style="font-size: 0.8rem;">Note:</label>
+                                                            <textarea class="form-control" id="note" name="note" rows="1" style="font-size: 0.8rem;"><?= htmlspecialchars($item['note'] ?? '') ?></textarea>
+                                                        </div>
+                                                        <button type="submit" name="update_note" class="btn btn-primary btn-sm" style="font-size: 0.8rem;">Update Note</button>
+                                                    </form>
                                                 </div>
                                                 <div class="col-md-4 text-end">
                                                     <form method="POST" class="d-inline">
@@ -94,7 +115,7 @@ include 'includes/header.php';
                             </div>
                             <?php endforeach; ?>
                         </div>
-                        
+
                         <div class="col-md-4">
                             <div class="card">
                                 <div class="card-header">
@@ -103,14 +124,14 @@ include 'includes/header.php';
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between mb-2">
                                         <span>Items (<?= count($cart_items) ?>):</span>
-                                        <span>$<?= number_format($total_price, 2) ?></span>
+                                        <span>Rp <?= number_format($total_price, 0) ?></span>
                                     </div>
                                     <hr>
                                     <div class="d-flex justify-content-between mb-3">
                                         <strong>Total:</strong>
-                                        <strong class="text-primary">$<?= number_format($total_price, 2) ?></strong>
+                                        <strong class="text-primary">Rp <?= number_format($total_price, 0) ?></strong>
                                     </div>
-                                    
+
                                     <div class="d-grid gap-2">
                                         <button class="btn btn-primary btn-lg" onclick="alert('Checkout functionality coming soon!')">
                                             <i class="fas fa-credit-card"></i> Proceed to Checkout
@@ -124,7 +145,7 @@ include 'includes/header.php';
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="card mt-3">
                                 <div class="card-body">
                                     <h6><i class="fas fa-info-circle"></i> Cart Information</h6>

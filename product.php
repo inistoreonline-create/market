@@ -82,7 +82,7 @@ include 'includes/header.php';
                     <div class="col-md-6">
                         <div class="card-body">
                             <h3 class="card-title"><?= htmlspecialchars($product['title']) ?></h3>
-                            <h4 class="text-primary mb-3">$<?= number_format($product['price'], 2) ?></h4>
+                            <h4 class="text-primary mb-3">Rp <?= number_format($product['price'], 0) ?></h4>
                             
                             <?php if ($product['category']): ?>
                             <p><strong>Category:</strong> 

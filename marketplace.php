@@ -88,7 +88,7 @@ include 'includes/header.php';
                 <div class="card-body">
                     <h5 class="card-title"><?= htmlspecialchars($product['title']) ?></h5>
                     <p class="card-text"><?= htmlspecialchars(substr($product['description'], 0, 100)) ?>...</p>
-                    <p class="card-text"><strong>$<?= number_format($product['price'], 2) ?></strong></p>
+                    <p class="card-text"><strong>Rp <?= number_format($product['price'], 0) ?></strong></p>
                     <p class="card-text">
                         <small class="text-muted">
                             by <?= htmlspecialchars($product['username']) ?>

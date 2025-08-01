@@ -95,24 +95,21 @@ include 'includes/header.php';
                             <label for="category" class="form-label">Category *</label>
                             <select class="form-select" id="category" name="category" required>
                                 <option value="">Select Category</option>
-                                <option value="Gaming Consoles" <?= ($_POST['category'] ?? '') == 'Gaming Consoles' ? 'selected' : '' ?>>Gaming Consoles</option>
-                                <option value="PC Gaming" <?= ($_POST['category'] ?? '') == 'PC Gaming' ? 'selected' : '' ?>>PC Gaming</option>
+                                <option value="Item Game" <?= ($_POST['category'] ?? '') == 'Item Game' ? 'selected' : '' ?>>Item Game</option>
+                                <option value="Akun Game" <?= ($_POST['category'] ?? '') == 'Akun Game' ? 'selected' : '' ?>>Akun Game</option>
+                                <option value="Perangkat Game" <?= ($_POST['category'] ?? '') == 'Perangkat Games' ? 'selected' : '' ?>>Perangkat Game</option>
                                 <option value="Games" <?= ($_POST['category'] ?? '') == 'Games' ? 'selected' : '' ?>>Games</option>
-                                <option value="Accessories" <?= ($_POST['category'] ?? '') == 'Accessories' ? 'selected' : '' ?>>Accessories</option>
-                                <option value="Controllers" <?= ($_POST['category'] ?? '') == 'Controllers' ? 'selected' : '' ?>>Controllers</option>
-                                <option value="Headsets" <?= ($_POST['category'] ?? '') == 'Headsets' ? 'selected' : '' ?>>Headsets</option>
-                                <option value="Keyboards & Mice" <?= ($_POST['category'] ?? '') == 'Keyboards & Mice' ? 'selected' : '' ?>>Keyboards & Mice</option>
-                                <option value="Monitors" <?= ($_POST['category'] ?? '') == 'Monitors' ? 'selected' : '' ?>>Monitors</option>
-                                <option value="Other" <?= ($_POST['category'] ?? '') == 'Other' ? 'selected' : '' ?>>Other</option>
+                                <option value="Lain lain" <?= ($_POST['category'] ?? '') == 'Lain lain' ? 'selected' : '' ?>>Lain lain</option>
+
                             </select>
                         </div>
 
                         <div class="mb-3">
-                            <label for="price" class="form-label">Price (USD) *</label>
+                            <label for="price" class="form-label">Harga (Rp) *</label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
+                                <span class="input-group-text">Rp</span>
                                 <input type="number" class="form-control" id="price" name="price" 
-                                       step="0.01" min="0.01" placeholder="0.00" 
+                                       step="1" min="1" placeholder="0" 
                                        value="<?= htmlspecialchars($_POST['price'] ?? '') ?>" required>
                             </div>
                         </div>
